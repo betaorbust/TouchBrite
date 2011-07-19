@@ -29,7 +29,7 @@ TouchScreen ts(3, 1, 0, 2); // Make a new touch screen object
 
 // ---- Delay constants ----
 int LoopDelay = 10; // How much to delay the main loop
-int LatchDelay = 1; // How much to delay the latching. Longer for longer chains.
+int LatchDelay = 3; // How much to delay the latching. Longer for longer chains.
 
 
 // ---- SETUP ----
@@ -45,20 +45,22 @@ void setup() {
   
   Serial.begin(38400); // Was debugging with serial so I left this in.
   
-}
-
-
-// ---- Main Loop ----
-void loop() {
   SB_CommandMode = B01; // Write to current control registers
   SB_RedCommand = 127; // Full current
   SB_GreenCommand = 127; // Full current
   SB_BlueCommand = 127; // Full current
   SB_SendPacket();
+}
+
+
+// ---- Main Loop ----
+void loop() {
+  
   
   ts.read(coords); // Get touchscreen coordinates
   
   if(coords[0]<lims[1] && coords[1]<lims[3]){ // Thresholding for touch activity
+    
     // Detect out of range values and trim them.
     if(coords[0]>lims[1]){coords[0]=lims[1];}
     if(coords[1]>lims[3]){coords[1]=lims[3];}
@@ -72,7 +74,7 @@ void loop() {
     float floatcoords[2]={float(coords[0]),float(coords[1])}; //cheap type conversion.
     
     long rgbval = HSV_to_RGB(6*floatcoords[0]/1023,1,floatcoords[1]/1023); // Get RGB from coords via HV
-    long rgbval = HSV_to_RGB(6*floatcoords[0]/1023,floatcoords[1]/1023,1); // Get RGB from coords via HS
+    //long rgbval = HSV_to_RGB(6*floatcoords[0]/1023,floatcoords[1]/1023,.1); // Get RGB from coords via HS
     
     // Shifting out the returns
     rgb[0] = (rgbval & 0x00FF0000) >> 16; // there must be better ways
@@ -99,7 +101,7 @@ void loop() {
   }
     
   // Loop delay
-   delay(10);
+   delay(1000);
 }
 
 
